@@ -1,0 +1,24 @@
+{
+  "_comment": "xStock ticker -> real, publicly-listed underlying ticker (Stooq/NYSE-Nasdaq symbol). ONLY entries we're confident about are listed - Gap Guard refuses to compute a gap for anything not in this table rather than guess. Deliberately excludes: BRKX, SPCXX, STRCX (mapping not verified with confidence) and the Tessera/PreStocks/Sunrise entries in xstocks.json (OPENAI, KALSHI, ANTHROPIC, MU, ROBOSTRATEGY, SKHY, SNDK, DRAM) - those represent private companies or non-equity instruments with no real NYSE/Nasdaq closing price to compare against, so the whole 'gap vs. real market close' concept doesn't apply to them.",
+  "map": {
+    "SPYX": "SPY",
+    "NVDAX": "NVDA",
+    "GOOGLX": "GOOGL",
+    "QQQX": "QQQ",
+    "TSLAX": "TSLA",
+    "CRCLX": "CRCL",
+    "COINX": "COIN",
+    "MSTRX": "MSTR",
+    "AMZNX": "AMZN",
+    "HOODX": "HOOD",
+    "APPLX": "AAPL",
+    "GLDX": "GLD",
+    "METAX": "META",
+    "PLTRX": "PLTR",
+    "MSFTX": "MSFT",
+    "GMEX": "GME",
+    "MCDX": "MCD",
+    "KOX": "KO",
+    "INTCX": "INTC"
+  }
+}

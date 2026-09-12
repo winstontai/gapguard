@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gap Guard</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --border: #e3e6ea; --text: #14171c; --muted: #6b7280;
+    --up: #0f7b4f; --down: #c0392b; --warn: #b45309; --accent: #2f6feb; --accent-soft: #eaf0fe;
+    --shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1216; --panel: #171b21; --border: #262c35; --text: #e6e9ee; --muted: #9aa4b2;
+      --up: #3ddc97; --down: #ff6b6b; --warn: #f0b429; --accent: #5b8cff; --accent-soft: #1b2536;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 56px; }
+  header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  h1 { font-size: 18px; margin: 0 8px 0 0; letter-spacing: -.01em; }
+  .pill { font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); }
+  .pill.live { color: var(--down); border-color: var(--down); }
+  .pill.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .spacer { flex: 1; }
+  button { font: inherit; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); color: var(--text); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.danger { color: var(--down); border-color: var(--down); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  input, select { font: inherit; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); color: var(--text); min-width: 0; }
+  .banner { border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .banner.closed { border-left: 4px solid var(--warn); }
+  .banner.open { border-left: 4px solid var(--up); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.open { background: var(--up); } .dot.closed { background: var(--warn); }
+  .banner b { font-size: 16px; }
+  .grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; padding: 0 8px 6px 0; }
+  td { padding: 7px 8px 7px 0; border-top: 1px solid var(--border); vertical-align: middle; }
+  td.num, th.num { text-align: right; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .up { color: var(--up); } .down { color: var(--down); } .muted { color: var(--muted); }
+  form.row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  form.row input { flex: 1 1 90px; } form.row select { flex: 1 1 110px; }
+  #msg { margin-bottom: 14px; padding: 10px 12px; border-radius: 8px; font-size: 13px; display: none; white-space: pre-wrap; word-break: break-word; }
+  #msg.ok { display: block; background: var(--accent-soft); border: 1px solid var(--accent); }
+  #msg.err { display: block; background: color-mix(in srgb, var(--down) 12%, transparent); border: 1px solid var(--down); }
+  .ltv { height: 8px; border-radius: 999px; background: var(--border); overflow: hidden; margin: 8px 0 4px; position: relative; }
+  .ltv > span { display: block; height: 100%; background: var(--accent); }
+  .kv { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; }
+  .kv span:last-child { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .report { border-top: 1px solid var(--border); padding: 10px 0; }
+  .report:first-of-type { border-top: 0; }
+  .report h3 { margin: 0 0 4px; font-size: 14px; }
+  .report p { margin: 2px 0; color: var(--muted); }
+  .tx { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Gap Guard</h1>
+    <span class="pill" id="modePill">loading…</span>
+    <span class="pill" id="tgPill"></span>
+    <span class="pill mono" id="walletPill"></span>
+    <span class="spacer"></span>
+    <span class="muted" id="updated"></span>
+    <button id="refreshBtn">Refresh</button>
+  </header>
+
+  <div id="msg"></div>
+
+  <div class="banner" id="banner">
+    <span class="dot" id="bannerDot"></span>
+    <div><b id="bannerTitle">…</b><div class="muted" id="bannerSub"></div></div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Holdings</h2>
+        <table>
+          <thead><tr>
+            <th>Ticker</th><th class="num">Shares</th><th class="num">Ref close</th>
+            <th class="num">Exposure</th><th class="num">xStock</th><th class="num">Gap</th><th></th>
+          </tr></thead>
+          <tbody id="holdings"><tr><td colspan="7" class="muted">loading…</td></tr></tbody>
+        </table>
+        <form class="row" id="addForm">
+          <input id="addTicker" placeholder="AAPL" list="tickerList" required />
+          <input id="addShares" type="number" step="any" min="0" placeholder="shares" required />
+          <button type="submit">Add holding</button>
+        </form>
+        <datalist id="tickerList"></datalist>
+      </div>
+
+      <div class="card">
+        <h2>Close → open reconciliation</h2>
+        <div id="report" class="muted">loading…</div>
+      </div>
+
+      <div class="card">
+        <h2>Recent hedges</h2>
+        <table>
+          <thead><tr><th>When</th><th>Ticker</th><th>Side</th><th class="num">USD</th><th class="num">Price</th><th>Status</th></tr></thead>
+          <tbody id="hedges"><tr><td colspan="6" class="muted">none yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Open shorts</h2>
+        <div id="shorts" class="muted">loading…</div>
+        <form class="row" id="hedgeForm">
+          <select id="hedgeTicker"></select>
+          <input id="hedgeUsd" type="number" step="any" min="0" placeholder="USD" required />
+          <button type="submit" class="primary">Open short</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Limits</h2>
+        <div id="limits"></div>
+        <form class="row" id="pauseForm"><button type="submit" id="pauseBtn">Pause</button></form>
+      </div>
+    </div>
+  </div>
+
+  <footer>Local dashboard, loopback only. In <span class="mono" id="modeFoot"></span> mode the hedge buttons
+    <span id="modeFootNote"></span>.</footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let busy = false;
+
+// Everything below goes through innerHTML, so anything that isn't a locally formatted number gets
+// escaped - error text and notes come from upstream APIs and the chain, not from this app.
+const ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ESCAPES[c]);
+
+const usd = (n) => n === null || n === undefined ? "—" : n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+const pct = (n) => n === null || n === undefined ? "—" : `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
+const signedUsd = (n) => `${n < 0 ? "-" : "+"}${usd(Math.abs(n))}`;
+const cls = (n) => n === null || n === undefined ? "" : n >= 0 ? "up" : "down";
+const short = (s) => `${s.slice(0, 4)}…${s.slice(-4)}`;
+
+async function api(path, body) {
+  // X-Gap-Guard forces a CORS preflight, so another site in this browser can't POST here.
+  const res = await fetch(path, body
+    ? { method: "POST", headers: { "Content-Type": "application/json", "X-Gap-Guard": "1" }, body: JSON.stringify(body) }
+    : undefined);
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.error || `request failed (${res.status})`);
+  return json;
+}
+
+function say(text, ok = true) {
+  const el = $("msg");
+  el.textContent = text;
+  el.className = ok ? "ok" : "err";
+}
+
+function render(s) {
+  $("modePill").textContent = s.mode;
+  $("modePill").className = s.live ? "pill live" : "pill";
+  $("tgPill").textContent = s.telegram ? "telegram on" : "dashboard only";
+  $("walletPill").textContent = s.wallet ? `${short(s.wallet.address)} · ${s.wallet.sol.toFixed(3)} SOL · ${usd(s.wallet.usdc)}` : "no wallet";
+  $("modeFoot").textContent = s.mode;
+  $("modeFootNote").textContent = s.live ? "send real transactions" : "record simulated trades at the live price";
+  $("updated").textContent = `updated ${new Date().toLocaleTimeString()}`;
+
+  $("banner").className = `banner ${s.market.isOpen ? "open" : "closed"}`;
+  $("bannerDot").className = `dot ${s.market.isOpen ? "open" : "closed"}`;
+  $("bannerTitle").textContent = s.market.isOpen ? `Market open — closes in ${s.market.countdown}` : `Market closed — reopens in ${s.market.countdown}`;
+  $("bannerSub").textContent = s.market.isOpen
+    ? "Your broker and the xStock market agree while both are live."
+    : `Your broker can't act until then. Total exposure ${usd(s.totalExposure)}.`;
+
+  $("holdings").innerHTML = s.holdings.length === 0
+    ? `<tr><td colspan="7" class="muted">No holdings yet — add one below.</td></tr>`
+    : s.holdings.map((h) => h.error
+      ? `<tr><td>${esc(h.ticker)}</td><td class="num">${h.shares}</td><td colspan="4" class="down">${esc(h.error)}</td><td><button data-remove="${h.id}">×</button></td></tr>`
+      : `<tr>
+           <td><b>${esc(h.ticker)}</b> <span class="muted">${esc(h.xstockTicker)}</span></td>
+           <td class="num">${h.shares}</td>
+           <td class="num">${usd(h.refClose)}</td>
+           <td class="num">${usd(h.exposure)}</td>
+           <td class="num">${usd(h.livePrice)}</td>
+           <td class="num ${cls(h.gapPct)}">${pct(h.gapPct)}</td>
+           <td><button data-remove="${h.id}">×</button></td>
+         </tr>`).join("");
+
+  const sh = s.shorts;
+  let html = "";
+  if (sh.error) html = `<p class="down">${esc(sh.error)}</p>`;
+  else if (sh.positions.length === 0) html = `<p class="muted">No open shorts.</p>`;
+  else {
+    if (sh.kind === "live") {
+      const ratio = sh.liquidationLtv ? Math.min(100, (sh.ltv / sh.liquidationLtv) * 100) : 0;
+      html += `<div class="kv"><span>Collateral</span><span>${usd(sh.collateralUsd)}</span></div>
+               <div class="kv"><span>Debt (borrow-factor adj.)</span><span>${usd(sh.debtUsd)}</span></div>
+               <div class="ltv"><span style="width:${ratio.toFixed(1)}%"></span></div>
+               <div class="muted" style="font-size:12px">LTV ${(sh.ltv * 100).toFixed(1)}% of ${(sh.liquidationLtv * 100).toFixed(1)}% liquidation</div>`;
+    }
+    html += sh.positions.map((p) => `
+      <div class="kv" style="border-top:1px solid var(--border);margin-top:8px;padding-top:10px">
+        <span><b>${esc(p.ticker)}</b> ${p.qty.toFixed(4)}${p.pnlUsd === undefined ? "" : ` <span class="${cls(p.pnlUsd)}">${signedUsd(p.pnlUsd)}</span>`}</span>
+        <span>${usd(p.usd)} <button data-unwind="${esc(p.ticker)}">Unwind</button></span>
+      </div>`).join("");
+  }
+  $("shorts").innerHTML = html;
+
+  $("limits").innerHTML = `
+    <div class="kv"><span>Hedged (24h)</span><span>${usd(s.limits.hedged24h)} / ${usd(s.limits.maxDailyUsd)}</span></div>
+    <div class="kv"><span>Per-hedge cap</span><span>${usd(s.limits.maxUsdPerHedge)}</span></div>
+    <div class="kv"><span>Gap alert threshold</span><span>${Number(s.limits.gapAlertThresholdPct)}%</span></div>
+    <div class="kv"><span>Kill switch</span><span class="${s.limits.paused ? "down" : "up"}">${s.limits.paused ? "PAUSED" : "active"}</span></div>`;
+  $("pauseBtn").textContent = s.limits.paused ? "Resume" : "Pause";
+  $("pauseBtn").className = s.limits.paused ? "primary" : "danger";
+
+  $("hedges").innerHTML = s.hedges.length === 0
+    ? `<tr><td colspan="6" class="muted">none yet</td></tr>`
+    : s.hedges.map((h) => `<tr>
+        <td class="muted">${esc(new Date(h.ts).toLocaleString())}</td>
+        <td>${esc(h.xstockTicker)}</td>
+        <td>${h.side === "open" ? "short" : "unwind"}</td>
+        <td class="num">${usd(h.usdAmount)}</td>
+        <td class="num">${usd(h.priceUsd)}</td>
+        <td>${h.txSignature
+          ? `<a class="tx" href="https://solscan.io/tx/${encodeURIComponent(h.txSignature)}" target="_blank" rel="noreferrer">${esc(h.status)}</a>`
+          : esc(h.status)}</td>
+      </tr>`).join("");
+
+  const picker = $("hedgeTicker");
+  if (picker.options.length !== s.supportedTickers.length) {
+    picker.innerHTML = s.supportedTickers.map((t) => `<option>${esc(t)}</option>`).join("");
+    $("tickerList").innerHTML = picker.innerHTML;
+  }
+}
+
+function renderReport(rows) {
+  $("report").innerHTML = rows.length === 0
+    ? `<p class="muted">Add a holding to see its last close → open.</p>`
+    : rows.map((r) => r.error
+      ? `<div class="report"><h3>${esc(r.xstockTicker)}</h3><p>${esc(r.error)}</p></div>`
+      : `<div class="report">
+           <h3>${esc(r.underlyingTicker)} — ${esc(r.closeDate)} close → ${esc(r.reopenDate)} open</h3>
+           <p>Closed ${usd(r.priorClose)}, opened ${usd(r.realOpen)} (<span class="${cls(r.actualGapPct)}">${pct(r.actualGapPct)}</span>)</p>
+           <p>Your ${Number(r.shares)} sh moved <span class="${cls(r.exposureChangeUsd)}">${signedUsd(r.exposureChangeUsd)}</span> while your broker was closed</p>
+           ${r.predictedGapPct === null ? `<p>No xStock prices for that window</p>`
+             : `<p>${esc(r.xstockTicker)} moved <span class="${cls(r.predictedGapPct)}">${pct(r.predictedGapPct)}</span> while closed${r.pricesBackfilled ? " (backfilled)" : ""} — off by ${Math.abs(r.predictionErrorPp).toFixed(2)}pp</p>`}
+           ${r.basisPct === null ? "" : `<p>Token premium at the close: ${pct(r.basisPct)}</p>`}
+           ${r.peakMovePct === null ? "" : `<p>Biggest swing while closed: <span class="${cls(r.peakMovePct)}">${pct(r.peakMovePct)}</span></p>`}
+           ${r.hedgeCount === 0 ? "" : `<p>${r.simulated ? "Simulated hedge" : "Hedge"} P&L at the open: <span class="${cls(r.hedgePnlUsd)}">${signedUsd(r.hedgePnlUsd)}</span> · net <span class="${cls(r.netChangeUsd)}">${signedUsd(r.netChangeUsd)}</span></p>`}
+         </div>`).join("");
+}
+
+async function refresh() {
+  try { render(await api("/api/state")); } catch (err) { say(err.message, false); }
+}
+
+async function loadReport() {
+  try { renderReport(await api("/api/report")); } catch (err) { $("report").innerHTML = `<p class="down">${esc(err.message)}</p>`; }
+}
+
+async function act(fn) {
+  if (busy) return;
+  busy = true;
+  try { await fn(); } catch (err) { say(err.message, false); } finally { busy = false; }
+}
+
+$("refreshBtn").onclick = () => act(async () => { await refresh(); await loadReport(); });
+
+$("addForm").onsubmit = (e) => { e.preventDefault(); act(async () => {
+  await api("/api/holdings", { ticker: $("addTicker").value, shares: Number($("addShares").value) });
+  say(`Added ${$("addShares").value} sh ${$("addTicker").value.toUpperCase()}`);
+  $("addShares").value = "";
+  await refresh(); await loadReport();
+}); };
+
+$("hedgeForm").onsubmit = (e) => { e.preventDefault(); act(async () => {
+  const ticker = $("hedgeTicker").value, amount = Number($("hedgeUsd").value);
+  say(`Opening ${usd(amount)} short on ${ticker}…`);
+  const out = await api("/api/hedge", { ticker, amount });
+  say(`${out.live ? "Shorted" : "[dry-run] Shorted"} ${usd(out.usdAmount)} of ${out.ticker} at ${usd(out.priceUsd)}${out.detail ? ` — ${out.detail}` : ""}`);
+  $("hedgeUsd").value = "";
+  await refresh();
+}); };
+
+$("pauseForm").onsubmit = (e) => { e.preventDefault(); act(async () => {
+  const out = await api("/api/pause", { paused: $("pauseBtn").textContent === "Pause" });
+  say(out.paused ? "Paused — no hedge will be signed." : "Resumed.");
+  await refresh();
+}); };
+
+document.addEventListener("click", (e) => {
+  const unwind = e.target.closest("[data-unwind]");
+  if (unwind) return act(async () => {
+    const ticker = unwind.dataset.unwind;
+    say(`Unwinding ${ticker}…`);
+    const out = await api("/api/unwind", { ticker, amount: "all" });
+    say(`${out.live ? "Closed" : "[dry-run] Closed"} ${usd(out.usdAmount)} of ${out.ticker} at ${usd(out.priceUsd)}${out.detail ? ` — ${out.detail}` : ""}`);
+    await refresh();
+  });
+
+  const remove = e.target.closest("[data-remove]");
+  if (remove) return act(async () => {
+    await api("/api/holdings/remove", { id: Number(remove.dataset.remove) });
+    await refresh(); await loadReport();
+  });
+});
+
+refresh();
+loadReport();
+setInterval(refresh, 20000);
+</script>
+</body>
+</html>

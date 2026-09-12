@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.log
+data/*.sqlite
+data/*.sqlite-journal
+wallet*.json
+.surfpool/
