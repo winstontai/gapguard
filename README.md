@@ -199,9 +199,10 @@ cp .env.example .env
 npm run dev
 ```
 
-Everything in `.env` has a working default except the wallet. Worth setting:
+Every value in `.env.example` has a working default, so the file runs as-is. Worth setting:
 - `WALLET_KEYPAIR_PATH`: a **dedicated burner keypair** stored outside the repo, and outside
-  OneDrive or any other synced folder. Required by config validation even in dry-run.
+  OneDrive or any other synced folder. **Only `mainnet-live` requires one** - dry-run never signs,
+  so leave it blank to look around.
 - `TELEGRAM_BOT_TOKEN` / `TELEGRAM_OWNER_CHAT_ID`: **optional**. Leave blank for dashboard-only;
   fill them in (free, via [@BotFather](https://t.me/BotFather) and
   [@userinfobot](https://t.me/userinfobot)) to get push alerts and bot commands.
