@@ -28,7 +28,11 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      # enablement turns Pages on via the API if it isn't already, so this works without
+      # first setting Source by hand in Settings. No-op once Pages exists.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
