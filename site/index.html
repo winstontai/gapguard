@@ -1,0 +1,512 @@
+<title>Gap Guard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;600&display=swap">
+<style>
+  :root {
+    --ground: #0B0E14;
+    --surface: #131824;
+    --surface-2: #182030;
+    --line: #232B3B;
+    --line-soft: #1A2130;
+    --ink: #E8EBF2;
+    --ink-dim: #8D97AC;
+    --ink-faint: #5C6679;
+    --amber: #F2A93B;
+    --amber-soft: rgba(242, 169, 59, .13);
+    --red: #FF7A6B;
+    --green: #5FD39A;
+
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --col: 680px;
+    --wide: 1060px;
+
+    color-scheme: dark;
+  }
+
+  /* Set explicitly so this file renders identically as a published artifact and as a
+     standalone page served from GitHub Pages, where no wrapper reset is applied. */
+  * { box-sizing: border-box; }
+  img { max-width: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { padding-inline: 24px; padding-block: 0 96px; }
+  .col { max-width: var(--col); margin-inline: auto; }
+  .wide { max-width: var(--wide); margin-inline: auto; }
+
+  a { color: var(--amber); text-decoration: none; border-bottom: 1px solid rgba(242,169,59,.35); }
+  a:hover { border-bottom-color: var(--amber); }
+  a:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 2px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  h1, h2, h3 { font-family: var(--serif); font-weight: 500; text-wrap: balance; margin: 0; }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-bottom: 1px solid var(--line);
+    padding-block: 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .wordmark { font-family: var(--serif); font-size: 19px; letter-spacing: -.01em; }
+  .wordmark b { font-weight: 600; }
+  .masthead .tag {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .masthead .spacer { flex: 1; }
+
+  /* ---------- hero ---------- */
+  .hero { padding-block: 64px 8px; }
+  .hero h1 {
+    font-size: clamp(38px, 6.4vw, 68px);
+    line-height: 1.04;
+    letter-spacing: -.025em;
+    max-width: 15ch;
+  }
+  .hero h1 em { font-style: italic; color: var(--amber); }
+  .hero .lede {
+    margin-top: 24px;
+    max-width: 58ch;
+    font-size: 18px;
+    color: var(--ink-dim);
+  }
+
+  /* ---------- week strip ---------- */
+  .week { margin-top: 56px; }
+  .week-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .week-head .lbl {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .legend { display: flex; gap: 18px; font-family: var(--mono); font-size: 11px; color: var(--ink-dim); }
+  .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 7px; vertical-align: -1px; }
+  .legend .on { background: var(--ink); }
+  .legend .off { background: var(--surface-2); border: 1px solid var(--line); }
+
+  .grid-scroll { overflow-x: auto; padding-bottom: 4px; }
+  .weekgrid { display: grid; grid-template-columns: 34px repeat(24, 1fr); gap: 3px; min-width: 620px; }
+  .weekgrid .day {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+    color: var(--ink-faint); display: flex; align-items: center;
+  }
+  .weekgrid .hr { aspect-ratio: 1; background: var(--surface-2); border-radius: 1px; }
+  .weekgrid .hr.open { background: var(--ink); }
+  .weekgrid .hr.edge { background: rgba(232,235,242,.45); }
+  .weekgrid .hour-axis {
+    font-family: var(--mono); font-size: 9px; color: var(--ink-faint);
+    text-align: center; padding-top: 6px;
+  }
+
+  .sweep { position: relative; overflow: hidden; }
+  .sweep::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, var(--amber-soft) 45%, transparent 90%);
+    transform: translateX(-100%);
+    animation: sweep 2.6s ease-out .5s 1 forwards;
+    pointer-events: none;
+  }
+  @keyframes sweep { to { transform: translateX(110%); } }
+  @media (prefers-reduced-motion: reduce) { .sweep::after { animation: none; opacity: 0; } }
+
+  .week-foot {
+    margin-top: 18px; display: flex; gap: 40px; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px;
+  }
+  .figure .n {
+    font-family: var(--mono); font-size: 30px; font-weight: 500;
+    letter-spacing: -.02em; font-variant-numeric: tabular-nums; display: block;
+  }
+  .figure .n.amber { color: var(--amber); }
+  .figure .c { font-size: 13px; color: var(--ink-dim); display: block; margin-top: 2px; }
+
+  /* ---------- sections ---------- */
+  section { padding-block: 72px 0; }
+  section h2 {
+    font-size: clamp(26px, 3.4vw, 36px);
+    line-height: 1.15; letter-spacing: -.02em;
+    margin-top: 22px; max-width: 20ch;
+  }
+  section p { max-width: 64ch; margin: 18px 0 0; color: var(--ink-dim); }
+  section p strong { color: var(--ink); font-weight: 450; }
+  .pull { color: var(--ink); font-size: 18px; }
+
+  /* ---------- gap chart ---------- */
+  .chart { margin-top: 40px; background: var(--surface); border: 1px solid var(--line); padding: 20px 18px 14px; }
+  .chart svg { display: block; width: 100%; height: auto; }
+  .chart figcaption {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-faint);
+    margin-top: 12px; line-height: 1.5;
+  }
+
+  /* ---------- table ---------- */
+  .table-wrap { margin-top: 36px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  caption {
+    text-align: left; font-family: var(--mono); font-size: 11px;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-faint); padding-bottom: 12px;
+  }
+  th, td { padding: 11px 14px 11px 0; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint); font-weight: 400;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td {
+    font-family: var(--mono); font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  tbody td:first-child { font-family: var(--sans); font-size: 15px; }
+  tbody tr.fail td { color: var(--red); }
+  tbody tr.fail td:first-child::after {
+    content: "loses to baseline"; display: block;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .06em;
+    color: var(--ink-faint); text-transform: uppercase;
+  }
+  tbody tr.total td { border-bottom: none; border-top: 1px solid var(--line); color: var(--ink); font-weight: 500; padding-top: 14px; }
+  tbody tr.total td:first-child { font-weight: 600; }
+
+  .note {
+    margin-top: 20px; border-left: 2px solid var(--amber);
+    padding: 4px 0 4px 18px; max-width: 62ch;
+  }
+  .note p { margin-top: 0; }
+  .note p + p { margin-top: 12px; }
+
+  /* ---------- loop ---------- */
+  .loop { margin-top: 40px; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .step { background: var(--ground); padding: 22px 24px; display: grid; grid-template-columns: 108px 1fr; gap: 24px; align-items: start; }
+  .step .phase {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--amber); padding-top: 4px;
+  }
+  .step h3 { font-size: 20px; letter-spacing: -.01em; }
+  .step p { margin-top: 7px; max-width: 56ch; font-size: 15px; }
+  @media (max-width: 620px) { .step { grid-template-columns: 1fr; gap: 8px; } }
+
+  /* ---------- ledger ---------- */
+  .ledger { margin-top: 36px; background: var(--surface); border: 1px solid var(--line); }
+  .ledger-row { display: grid; grid-template-columns: 1fr auto; gap: 20px; padding: 14px 20px; border-bottom: 1px solid var(--line-soft); align-items: baseline; }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-row .k { font-size: 14px; color: var(--ink-dim); }
+  .ledger-row .v { font-family: var(--mono); font-size: 14px; font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
+  .ledger-row.head { background: var(--surface-2); border-bottom-color: var(--line); }
+  .ledger-row.head .k { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+  .ledger-row.head .v { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+  .ledger-row .v.amber { color: var(--amber); }
+
+  /* ---------- limits ---------- */
+  .limits { margin-top: 32px; max-width: 64ch; }
+  .limits li { color: var(--ink-dim); padding: 12px 0; border-bottom: 1px solid var(--line-soft); list-style: none; }
+  .limits ul { margin: 0; padding: 0; }
+  .limits li b { color: var(--ink); font-weight: 500; }
+
+  /* ---------- code ---------- */
+  pre {
+    margin: 28px 0 0; background: var(--surface); border: 1px solid var(--line);
+    padding: 16px 18px; overflow-x: auto;
+    font-family: var(--mono); font-size: 13px; line-height: 1.7; color: var(--ink);
+  }
+  pre .c { color: var(--ink-faint); }
+
+  /* ---------- footer ---------- */
+  footer { margin-top: 88px; border-top: 1px solid var(--line); padding-top: 24px; }
+  .foot-in { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: baseline; }
+  footer .meta { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+</style>
+
+<div class="page">
+
+  <div class="wide masthead">
+    <span class="wordmark">Gap&nbsp;<b>Guard</b></span>
+    <span class="tag">Overnight &amp; weekend gap hedging</span>
+    <span class="spacer"></span>
+    <span class="tag"><a href="https://github.com/winstontai/gapguard">github.com/winstontai/gapguard</a></span>
+  </div>
+
+  <div class="wide hero">
+    <h1>Your broker is closed <em>135 hours</em> a week. Solana isn't.</h1>
+    <p class="lede">
+      Tokenized US equities keep trading while the NYSE is dark. Gap Guard reads that tape, tells you
+      what your frozen portfolio is exposed to, and hedges it with a real on-chain short — then shows
+      you exactly how right or wrong it was.
+    </p>
+  </div>
+
+  <div class="wide week">
+    <div class="week-head">
+      <span class="lbl">One week · 168 hours · NYSE regular session 9:30–16:00 ET</span>
+      <span class="legend">
+        <span><i class="on"></i>Broker open</span>
+        <span><i class="off"></i>Frozen</span>
+      </span>
+    </div>
+    <div class="grid-scroll">
+      <div class="weekgrid sweep" id="weekgrid"></div>
+    </div>
+    <div class="week-foot">
+      <span class="figure"><span class="n">32</span><span class="c">hours you can act</span></span>
+      <span class="figure"><span class="n amber">135</span><span class="c">hours you cannot</span></span>
+      <span class="figure"><span class="n">81%</span><span class="c">of opens called correctly</span></span>
+      <span class="figure"><span class="n">248</span><span class="c">windows measured</span></span>
+    </div>
+  </div>
+
+  <div class="col">
+
+    <section>
+      <div class="eyebrow">Market closed</div>
+      <h2>The gap is where retail risk actually lives.</h2>
+      <p>
+        Earnings leak on a Friday evening. A supplier catches fire on a Saturday. You watch it happen,
+        you understand what it means for the things you own, and you can do nothing until 9:30am —
+        at which point the stock doesn't open where it closed. It opens at a price that has already
+        absorbed all of it.
+      </p>
+      <p>
+        Institutions hedge this with futures and swaps. For someone holding 100 shares of NVDA, that
+        door is shut: <strong>one ES contract is roughly $300k of notional</strong>, weekend puts cost a
+        full weekend of time value, and extended-hours trading doesn't cover weekends at all.
+      </p>
+
+      <figure class="chart">
+        <svg viewBox="0 0 680 250" role="img" aria-label="Friday closes at 100, the xStock drifts down through the weekend, and Monday opens 1.8 percent lower.">
+          <rect x="232" y="26" width="220" height="150" fill="#182030"></rect>
+          <text x="342" y="20" fill="#5C6679" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" text-anchor="middle">WEEKEND — BROKER SHUT</text>
+
+          <line x1="40" y1="176" x2="648" y2="176" stroke="#232B3B" stroke-width="1"></line>
+
+          <path d="M40 108 L70 96 L100 104 L130 88 L160 94 L196 86 L232 90" fill="none" stroke="#E8EBF2" stroke-width="2"></path>
+          <path d="M232 90 L280 104 L320 100 L360 126 L410 134 L452 141" fill="none" stroke="#F2A93B" stroke-width="2" stroke-dasharray="3 4"></path>
+          <path d="M452 145 L490 150 L530 140 L570 152 L610 146 L648 156" fill="none" stroke="#E8EBF2" stroke-width="2"></path>
+
+          <circle cx="232" cy="90" r="3.5" fill="#E8EBF2"></circle>
+          <circle cx="452" cy="145" r="3.5" fill="#E8EBF2"></circle>
+
+          <line x1="466" y1="90" x2="466" y2="145" stroke="#F2A93B" stroke-width="1"></line>
+          <line x1="461" y1="90" x2="471" y2="90" stroke="#F2A93B" stroke-width="1"></line>
+          <line x1="461" y1="145" x2="471" y2="145" stroke="#F2A93B" stroke-width="1"></line>
+          <text x="478" y="121" fill="#F2A93B" font-family="IBM Plex Mono, monospace" font-size="12">GAP −1.8%</text>
+
+          <text x="40" y="198" fill="#8D97AC" font-family="IBM Plex Mono, monospace" font-size="10">FRI SESSION</text>
+          <text x="232" y="214" fill="#8D97AC" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">FRI CLOSE</text>
+          <text x="452" y="214" fill="#8D97AC" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">MON OPEN</text>
+          <text x="648" y="198" fill="#8D97AC" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">MON SESSION</text>
+
+          <line x1="248" y1="238" x2="276" y2="238" stroke="#F2A93B" stroke-width="2" stroke-dasharray="3 4"></line>
+          <text x="286" y="242" fill="#5C6679" font-family="IBM Plex Mono, monospace" font-size="10">xStock tape — the only live price while the NYSE is dark</text>
+        </svg>
+        <figcaption>
+          The dashed line is the part nobody could previously see. It is a tradeable, 1:1-backed claim
+          on the same stock, printing a price every hour of the weekend.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <div class="eyebrow">Price discovery</div>
+      <h2>So does that tape actually predict the open?</h2>
+      <p>
+        This is the load-bearing claim, so it's measured rather than asserted. Every close-to-open
+        window compares how far the xStock moved while the market was shut against how far the stock
+        actually gapped. The baseline is <strong>assuming no gap at all</strong> — precisely what you're
+        stuck with today.
+      </p>
+    </section>
+
+  </div>
+
+  <div class="wide">
+    <div class="table-wrap">
+      <table>
+        <caption>248 windows · 3 months to Sept 2026 · mean absolute error in percentage points</caption>
+        <thead>
+          <tr><th scope="col">Ticker</th><th scope="col">Error</th><th scope="col">Baseline</th><th scope="col">Direction called</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SPY</td><td>0.29pp</td><td>0.40pp</td><td>42/51 · 82%</td></tr>
+          <tr><td>QQQ</td><td>0.49pp</td><td>0.81pp</td><td>48/56 · 86%</td></tr>
+          <tr><td>NVDA</td><td>0.92pp</td><td>1.14pp</td><td>47/60 · 78%</td></tr>
+          <tr class="fail"><td>TSLA</td><td>1.22pp</td><td>1.06pp</td><td>42/54 · 78%</td></tr>
+          <tr class="total"><td>All</td><td>0.73pp</td><td>0.85pp</td><td>179/221 · 81%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="note">
+      <p class="pull">Direction is the signal. Magnitude overshoots — and on TSLA it loses outright.</p>
+      <p>
+        TSLAx's off-hours book is thin enough that it overshoots badly; one weekend it predicted
+        +3.66% against a −0.44% actual. That row is on this page for the same reason it's in the
+        README: a tool that only reports its wins teaches you nothing about how far to trust it next
+        weekend.
+      </p>
+      <p>
+        The comparison is move-vs-move rather than price levels, because xStocks carry a persistent
+        premium — SPYx averaged +0.56% — that would otherwise be baked into every error.
+      </p>
+    </div>
+
+    <section>
+      <div class="eyebrow">The hedge</div>
+      <h2>A spot sell can't hedge shares held at a broker.</h2>
+      <p>
+        If you don't already hold the token, selling it doesn't reduce your exposure — you've just
+        spent money. A hedge has to <strong>gain when the stock falls</strong>, which means borrowing the
+        asset and selling it. So the hedge leg composes two protocols that already exist: Kamino for
+        the borrow, Jupiter for the execution.
+      </p>
+
+      <div class="loop">
+        <div class="step">
+          <span class="phase">Track</span>
+          <div>
+            <h3>You enter what you actually hold</h3>
+            <p>A ticker and a share count. No brokerage API, no account linking, no credentials — nothing of yours is connected to anything.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="phase">Watch</span>
+          <div>
+            <h3>It measures the drift while you're locked out</h3>
+            <p>The matching xStock's move from the last real close, converted to dollars across your positions, with one alert per ticker per closed session — not forty as a threshold oscillates.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="phase">Hedge</span>
+          <div>
+            <h3>Borrow the xStock, sell it</h3>
+            <p>Collateral is sized for Kamino's borrow factor — 1.66× on SPYx and QQQx, 2.25× on NVDAx and TSLAx — so a $50 short posts $207.50 of USDC. Anything that would open above 60% LTV is refused.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="phase">Reconcile</span>
+          <div>
+            <h3>After the open, it marks its own homework</h3>
+            <p>Actual gap, what your frozen position moved, how many percentage points the prediction was off by, and what the hedge earned at the official open.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Proof</div>
+      <h2>Run end to end with real signed transactions.</h2>
+      <p>
+        Built with no funding, so the full cycle was executed against a local <strong>surfpool mainnet
+        fork</strong> — real Kamino programs, real Jupiter routes, real signed transactions, fake funds.
+        It's reproducible on any machine with <code>npm run fork:e2e</code>.
+      </p>
+
+      <div class="ledger">
+        <div class="ledger-row head"><span class="k">$50 QQQ short — open and unwind</span><span class="v">Result</span></div>
+        <div class="ledger-row"><span class="k">USDC collateral deposited</span><span class="v">$207.50</span></div>
+        <div class="ledger-row"><span class="k">QQQx borrowed and sold</span><span class="v">0.0698</span></div>
+        <div class="ledger-row"><span class="k">Loan-to-value at open</span><span class="v amber">40.0%</span></div>
+        <div class="ledger-row"><span class="k">Signed transactions</span><span class="v">5</span></div>
+        <div class="ledger-row"><span class="k">Round-trip cost</span><span class="v">~$0.03</span></div>
+      </div>
+      <p>
+        That run covers first-time Kamino account setup, which a plain mainnet simulation can't reach —
+        the accounts don't exist yet, so there's nothing to simulate against.
+      </p>
+    </section>
+
+    <section>
+      <div class="eyebrow">Limits</div>
+      <h2>What it doesn't do.</h2>
+      <div class="limits">
+        <ul>
+          <li><b>The signal is directional, not a magnitude.</b> Sizing a hedge off the raw predicted move would over-hedge.</li>
+          <li><b>Holdings are manual entry.</b> A ticker and a share count — there's no brokerage integration.</li>
+          <li><b>A short's legs aren't atomic.</b> Each failure path leaves you flat rather than half-hedged, and says how to finish it.</li>
+          <li><b>Kamino's weekend oracle can stall</b> on a large move, exactly when a hedge is most wanted. Gap Guard explains that rather than surfacing a raw program error.</li>
+          <li><b>Only SPYx, QQQx, NVDAx and TSLAx are shortable</b> today. Everything else is collateral-only.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Run it</div>
+      <h2>No account, no key, no money.</h2>
+      <p>
+        Dry-run mode uses live xStock and stock prices and simulates hedges, so the whole thing can be
+        tried without connecting or funding anything.
+      </p>
+<pre><span class="c"># dashboard on http://127.0.0.1:8788</span>
+npm install &amp;&amp; cp .env.example .env
+npm run dev
+
+<span class="c"># score the core claim against real historical gaps</span>
+npm run backtest</pre>
+      <p>
+        Built for the <a href="https://hackathons.solana.com/hackathons/stocklana">Stocklana hackathon</a>.
+        MIT licensed, 38 unit tests, and the security model is written up in the README —
+        the dashboard holds a hot wallet, so it's loopback-only behind Host, Origin and custom-header
+        checks that close CSRF and DNS rebinding.
+      </p>
+    </section>
+
+    <footer>
+      <div class="foot-in">
+        <span class="meta">Gap Guard · MIT</span>
+        <span class="meta"><a href="https://github.com/winstontai/gapguard">Source on GitHub</a></span>
+      </div>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var grid = document.getElementById("weekgrid");
+    var days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+    var html = "";
+    for (var d = 0; d < 7; d++) {
+      html += '<span class="day">' + days[d] + "</span>";
+      for (var h = 0; h < 24; h++) {
+        var weekday = d < 5;
+        var cls = "hr";
+        if (weekday && h >= 10 && h <= 15) cls += " open";
+        else if (weekday && h === 9) cls += " edge";
+        html += '<span class="' + cls + '"></span>';
+      }
+    }
+    html += '<span class="day"></span>';
+    for (var t = 0; t < 24; t++) {
+      html += '<span class="hour-axis">' + (t % 6 === 0 ? t : "") + "</span>";
+    }
+    grid.innerHTML = html;
+  })();
+</script>
