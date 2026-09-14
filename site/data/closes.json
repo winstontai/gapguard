@@ -1,0 +1,187 @@
+{
+  "generatedAt": "2026-09-14T13:24:07.585Z",
+  "source": {
+    "closes": "Yahoo Finance daily bars, via the app's own referenceClose module",
+    "livePrices": "fetched client-side from Jupiter Price API v3"
+  },
+  "sessionHoursEt": {
+    "open": "09:30",
+    "close": "16:00"
+  },
+  "tradingDays": [
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-09"
+  ],
+  "tickers": [
+    {
+      "xstock": "APPLX",
+      "underlying": "AAPL",
+      "mint": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp",
+      "decimals": 8,
+      "close": 332.27,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "AMZNX",
+      "underlying": "AMZN",
+      "mint": "Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
+      "decimals": 8,
+      "close": 256.78,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "COINX",
+      "underlying": "COIN",
+      "mint": "Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
+      "decimals": 8,
+      "close": 175.26,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "CRCLX",
+      "underlying": "CRCL",
+      "mint": "XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1",
+      "decimals": 8,
+      "close": 90.6,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "GLDX",
+      "underlying": "GLD",
+      "mint": "Xsv9hRk1z5ystj9MhnA7Lq4vjSsLwzL2nxrwmwtD3re",
+      "decimals": 8,
+      "close": 398.77,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "GMEX",
+      "underlying": "GME",
+      "mint": "Xsf9mBktVB9BSU5kf4nHxPq5hCBJ2j2ui3ecFGxPRGc",
+      "decimals": 8,
+      "close": 21.15,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "GOOGLX",
+      "underlying": "GOOGL",
+      "mint": "XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
+      "decimals": 8,
+      "close": 338.5,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "HOODX",
+      "underlying": "HOOD",
+      "mint": "XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
+      "decimals": 8,
+      "close": 112.57,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "INTCX",
+      "underlying": "INTC",
+      "mint": "XshPgPdXFRWB8tP1j82rebb2Q9rPgGX37RuqzohmArM",
+      "decimals": 8,
+      "close": 102.94,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "KOX",
+      "underlying": "KO",
+      "mint": "XsaBXg8dU5cPM6ehmVctMkVqoiRG2ZjMo1cyBJ3AykQ",
+      "decimals": 8,
+      "close": 88.29,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "MCDX",
+      "underlying": "MCD",
+      "mint": "XsqE9cRRpzxcGKDXj1BJ7Xmg4GRhZoyY1KpmGSxAWT2",
+      "decimals": 8,
+      "close": 252.53,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "METAX",
+      "underlying": "META",
+      "mint": "Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
+      "decimals": 8,
+      "close": 648.03,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "MSFTX",
+      "underlying": "MSFT",
+      "mint": "XspzcW1PRtgf6Wj92HCiZdjzKCyFekVD8P5Ueh3dRMX",
+      "decimals": 8,
+      "close": 495.63,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "MSTRX",
+      "underlying": "MSTR",
+      "mint": "XsP7xzNPvEHS1m6qfanPUGjNmdnmsLKEoNAnHjdxxyZ",
+      "decimals": 8,
+      "close": 130.97,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "NVDAX",
+      "underlying": "NVDA",
+      "mint": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+      "decimals": 8,
+      "close": 218.29,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "PLTRX",
+      "underlying": "PLTR",
+      "mint": "XsoBhf2ufR8fTyNSjqfU71DYGaE6Z3SUGAidpzriAA4",
+      "decimals": 8,
+      "close": 167.23,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "QQQX",
+      "underlying": "QQQ",
+      "mint": "Xs8S1uUs1zvS2p7iwtsG3b6fkhpvmwz4GYU3gWAmWHZ",
+      "decimals": 8,
+      "close": 714.88,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "SPYX",
+      "underlying": "SPY",
+      "mint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+      "decimals": 8,
+      "close": 764.29,
+      "closeDate": "2026-09-11"
+    },
+    {
+      "xstock": "TSLAX",
+      "underlying": "TSLA",
+      "mint": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+      "decimals": 8,
+      "close": 365.44,
+      "closeDate": "2026-09-11"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+name: Update reference closes
+
+# The hosted gap monitor needs each stock's last settled close, but Yahoo sends no CORS
+# headers, so a browser can't fetch it. This job does it once a day and commits the result
+# for the page to read same-origin.
+
+on:
+  schedule:
+    # 22:30 UTC on weekdays: 18:30 ET in summer, 17:30 in winter - safely after the 16:00
+    # close in both, so the daily bar has settled.
+    - cron: "30 22 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-closes
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      # Config validation requires the non-secret operating values; the template supplies
+      # all of them and no wallet is needed, since nothing here signs anything.
+      - run: cp .env.example .env
+
+      - run: npm run build
+
+      - name: Fetch closes
+        run: node scripts/update-closes.mjs
+        env:
+          LOG_LEVEL: error
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- site/data/closes.json; then
+            echo "closes unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/data/closes.json
+          git commit -m "Update reference closes"
+          git push

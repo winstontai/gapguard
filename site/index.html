@@ -204,6 +204,19 @@
   .fn { margin-top: 10px; font-size: 12.5px; color: var(--ink-3); max-width: 62ch; }
   .fn .neg { color: var(--neg); }
 
+  /* ---------- live monitor ---------- */
+  .mon-status {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--rule); padding: 5px 10px; margin-top: 16px;
+    color: var(--ink-2);
+  }
+  .mon-status i { width: 8px; height: 8px; display: block; background: var(--ink-3); flex: none; }
+  .mon-status.is-shut i { background: var(--neg); }
+  .mon-status.is-open i { background: var(--pos); }
+  td.neg { color: var(--neg); }
+  td.pos { color: var(--pos); }
+  td.wait { color: var(--ink-3); font-family: var(--text); font-size: 13.5px; }
+
   /* ---------- sequence ---------- */
   ol.seq { margin: 18px 0 0; padding: 0; list-style: none; counter-reset: s; }
   ol.seq li {
@@ -295,6 +308,39 @@
         <div><b>81%</b><span>of opens called correctly</span></div>
         <div><b>248</b><span>windows measured</span></div>
       </div>
+    </div>
+  </section>
+
+  <section class="row" id="live">
+    <div class="margin lbl">Live<br>Gap monitor</div>
+    <div>
+      <h2>What the tape is saying right now.</h2>
+      <p>
+        Live xStock prices read in your browser from Jupiter, against each stock's last settled
+        close. While the NYSE is shut this is the gap you're carrying — the move your broker won't
+        let you act on until the bell.
+      </p>
+
+      <div class="mon-status lbl" id="monStatus"><i></i><span>Reading live prices…</span></div>
+
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" class="lbl">Stock</th>
+              <th scope="col" class="lbl">Last close</th>
+              <th scope="col" class="lbl">xStock now</th>
+              <th scope="col" class="lbl">Implied gap</th>
+            </tr>
+          </thead>
+          <tbody id="monBody">
+            <tr><td class="wait" colspan="4">Reading live prices…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fn" id="monMeta">
+        Closes are refreshed once each trading day; prices are live. Largest moves first.
+      </p>
     </div>
   </section>
 
@@ -525,5 +571,117 @@ npm run backtest</pre>
       out += '<span class="ax">' + (t % 6 === 0 ? t : "") + "</span>";
     }
     document.getElementById("weekgrid").innerHTML = out;
+  })();
+
+  // Live gap monitor. Closes come from the committed data file (Yahoo blocks browser
+  // origins, so CI fetches them); prices come straight from Jupiter, which allows
+  // cross-origin reads. Static hosting only - nothing here signs or holds anything.
+  (function () {
+    var JUPITER = "https://lite-api.jup.ag/price/v3";
+    var statusEl = document.getElementById("monStatus");
+    var bodyEl = document.getElementById("monBody");
+    var metaEl = document.getElementById("monMeta");
+
+    function setStatus(text, cls) {
+      statusEl.className = "mon-status lbl" + (cls ? " " + cls : "");
+      statusEl.lastChild.textContent = text;
+    }
+
+    function message(text) {
+      bodyEl.replaceChildren();
+      var tr = document.createElement("tr");
+      var td = document.createElement("td");
+      td.className = "wait";
+      td.colSpan = 4;
+      td.textContent = text;
+      tr.appendChild(td);
+      bodyEl.appendChild(tr);
+    }
+
+    function etNow(d) {
+      var parts = {};
+      new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", hour12: false
+      }).formatToParts(d).forEach(function (p) { parts[p.type] = p.value; });
+      return {
+        date: parts.year + "-" + parts.month + "-" + parts.day,
+        mins: parseInt(parts.hour, 10) * 60 + parseInt(parts.minute, 10)
+      };
+    }
+
+    function cell(row, text, cls) {
+      var td = document.createElement("td");
+      td.textContent = text;
+      if (cls) td.className = cls;
+      row.appendChild(td);
+    }
+
+    fetch("data/closes.json", { cache: "no-cache" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("closes " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        var mints = data.tickers.map(function (t) { return t.mint; });
+        return fetch(JUPITER + "?ids=" + encodeURIComponent(mints.join(",")))
+          .then(function (r) {
+            if (!r.ok) throw new Error("Jupiter " + r.status);
+            return r.json();
+          })
+          .then(function (prices) { return { data: data, prices: prices }; });
+      })
+      .then(function (res) {
+        var data = res.data;
+        var prices = res.prices;
+
+        var now = etNow(new Date());
+        var isTradingDay = (data.tradingDays || []).indexOf(now.date) !== -1;
+        var inSession = now.mins >= 570 && now.mins < 960; // 09:30-16:00 ET
+        var open = isTradingDay && inSession;
+        setStatus(
+          open ? "NYSE open — positions are tradeable" : "NYSE closed — this is your frozen exposure",
+          open ? "is-open" : "is-shut"
+        );
+
+        var rows = [];
+        data.tickers.forEach(function (t) {
+          var p = prices[t.mint];
+          if (!p || !isFinite(p.usdPrice) || p.usdPrice <= 0) return;
+          rows.push({
+            sym: t.underlying,
+            close: t.close,
+            live: p.usdPrice,
+            gap: ((p.usdPrice - t.close) / t.close) * 100,
+            closeDate: t.closeDate
+          });
+        });
+
+        if (!rows.length) { message("Jupiter returned no prices for these tokens just now."); return; }
+        rows.sort(function (a, b) { return Math.abs(b.gap) - Math.abs(a.gap); });
+
+        bodyEl.replaceChildren();
+        rows.forEach(function (r) {
+          var tr = document.createElement("tr");
+          cell(tr, r.sym);
+          cell(tr, r.close.toFixed(2));
+          cell(tr, r.live.toFixed(2));
+          cell(tr, (r.gap >= 0 ? "+" : "") + r.gap.toFixed(2) + "%", r.gap >= 0 ? "pos" : "neg");
+          bodyEl.appendChild(tr);
+        });
+
+        metaEl.textContent =
+          "Closes settled " + rows[0].closeDate +
+          ", refreshed daily in CI. Prices live from Jupiter. Largest moves first. " +
+          rows.length + " of " + data.tickers.length + " tickers priced.";
+      })
+      .catch(function (err) {
+        setStatus("Live data unavailable here", "");
+        message(
+          "This copy of the page can't reach the price feed — the hosted version at " +
+          "github.com/winstontai/gapguard runs it live. (" + (err && err.message ? err.message : err) + ")"
+        );
+        metaEl.textContent = "";
+      });
   })();
 </script>
