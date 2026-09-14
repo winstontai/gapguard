@@ -94,7 +94,24 @@
     .row { grid-template-columns: 1fr; gap: 12px; padding-block: 28px; }
   }
 
-  .row.lead { padding-block: 38px 34px; }
+  /* Asymmetric opener: the claim on the left, its evidence immediately beside it.
+     Never a centred block — the page reads as a document, not a poster. */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: 22px 44px;
+    align-items: start;
+    padding-block: 34px;
+    border-bottom: 1px solid var(--rule-2);
+  }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 30px; padding-block: 28px; }
+  }
+  .hero > div > .lbl { display: block; margin-bottom: 12px; }
+  /* The schedule sits in a narrower column here, so it tightens rather than scrolls. */
+  .hero .weekgrid { min-width: 424px; grid-template-columns: 24px repeat(24, 1fr); gap: 1.5px; }
+  .hero .tally { grid-template-columns: repeat(2, 1fr); gap: 12px 20px; }
+
   h1 {
     font-family: var(--display);
     font-weight: 800;
@@ -250,9 +267,9 @@
     </div>
   </header>
 
-  <section class="row lead">
-    <div class="margin lbl">Summary</div>
+  <section class="hero">
     <div>
+      <span class="lbl">Summary</span>
       <h1>Your broker is closed <span class="ul">135 hours</span> a week. Solana isn't.</h1>
       <p class="standfirst">
         Tokenized US equities keep trading while the NYSE is dark. Gap Guard reads that tape, tells
@@ -260,13 +277,10 @@
         shows you exactly how right or wrong it was.
       </p>
     </div>
-  </section>
 
-  <section class="row">
-    <div class="margin lbl">Exhibit A<br>Trading week</div>
     <div class="sched">
+      <span class="lbl">Exhibit A · One trading week, 09:30–16:00 ET</span>
       <div class="sched-head">
-        <span class="lbl">168 hours · NYSE regular session 09:30–16:00 ET</span>
         <span class="key lbl">
           <span><i class="frozen"></i>Frozen</span>
           <span><i class="open"></i>Broker open</span>
