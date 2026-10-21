@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T01:10:22.388Z",
+  "generatedAt": "2026-10-21T00:48:43.509Z",
   "source": {
     "closes": "Yahoo Finance daily bars, via the app's own referenceClose module",
     "livePrices": "fetched client-side from Jupiter Price API v3"
@@ -9,7 +9,6 @@
     "close": "16:00"
   },
   "tradingDays": [
-    "2026-10-20",
     "2026-10-21",
     "2026-10-22",
     "2026-10-23",
@@ -28,7 +27,8 @@
     "2026-11-11",
     "2026-11-12",
     "2026-11-13",
-    "2026-11-16"
+    "2026-11-16",
+    "2026-11-17"
   ],
   "tickers": [
     {
@@ -36,152 +36,152 @@
       "underlying": "AAPL",
       "mint": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp",
       "decimals": 8,
-      "close": 342.94,
-      "closeDate": "2026-10-19"
+      "close": 339.5,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "AMZNX",
       "underlying": "AMZN",
       "mint": "Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
       "decimals": 8,
-      "close": 262.45,
-      "closeDate": "2026-10-19"
+      "close": 262.63,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "COINX",
       "underlying": "COIN",
       "mint": "Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
       "decimals": 8,
-      "close": 168.45,
-      "closeDate": "2026-10-19"
+      "close": 170.85,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "CRCLX",
       "underlying": "CRCL",
       "mint": "XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1",
       "decimals": 8,
-      "close": 81.37,
-      "closeDate": "2026-10-19"
+      "close": 85.87,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "GLDX",
       "underlying": "GLD",
       "mint": "Xsv9hRk1z5ystj9MhnA7Lq4vjSsLwzL2nxrwmwtD3re",
       "decimals": 8,
-      "close": 379.69,
-      "closeDate": "2026-10-19"
+      "close": 377.65,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "GMEX",
       "underlying": "GME",
       "mint": "Xsf9mBktVB9BSU5kf4nHxPq5hCBJ2j2ui3ecFGxPRGc",
       "decimals": 8,
-      "close": 26.44,
-      "closeDate": "2026-10-19"
+      "close": 26.47,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "GOOGLX",
       "underlying": "GOOGL",
       "mint": "XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
       "decimals": 8,
-      "close": 344.18,
-      "closeDate": "2026-10-19"
+      "close": 340.275,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "HOODX",
       "underlying": "HOOD",
       "mint": "XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
       "decimals": 8,
-      "close": 96.52,
-      "closeDate": "2026-10-19"
+      "close": 98.21,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "INTCX",
       "underlying": "INTC",
       "mint": "XshPgPdXFRWB8tP1j82rebb2Q9rPgGX37RuqzohmArM",
       "decimals": 8,
-      "close": 92.03,
-      "closeDate": "2026-10-19"
+      "close": 91.69,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "KOX",
       "underlying": "KO",
       "mint": "XsaBXg8dU5cPM6ehmVctMkVqoiRG2ZjMo1cyBJ3AykQ",
       "decimals": 8,
-      "close": 93.42,
-      "closeDate": "2026-10-19"
+      "close": 93.49,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "MCDX",
       "underlying": "MCD",
       "mint": "XsqE9cRRpzxcGKDXj1BJ7Xmg4GRhZoyY1KpmGSxAWT2",
       "decimals": 8,
-      "close": 242.67,
-      "closeDate": "2026-10-19"
+      "close": 246.52,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "METAX",
       "underlying": "META",
       "mint": "Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
       "decimals": 8,
-      "close": 705.44,
-      "closeDate": "2026-10-19"
+      "close": 694.25,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "MSFTX",
       "underlying": "MSFT",
       "mint": "XspzcW1PRtgf6Wj92HCiZdjzKCyFekVD8P5Ueh3dRMX",
       "decimals": 8,
-      "close": 533.52,
-      "closeDate": "2026-10-19"
+      "close": 531.87,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "MSTRX",
       "underlying": "MSTR",
       "mint": "XsP7xzNPvEHS1m6qfanPUGjNmdnmsLKEoNAnHjdxxyZ",
       "decimals": 8,
-      "close": 136.02,
-      "closeDate": "2026-10-19"
+      "close": 142.72,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "NVDAX",
       "underlying": "NVDA",
       "mint": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
       "decimals": 8,
-      "close": 217.09,
-      "closeDate": "2026-10-19"
+      "close": 216.47,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "PLTRX",
       "underlying": "PLTR",
       "mint": "XsoBhf2ufR8fTyNSjqfU71DYGaE6Z3SUGAidpzriAA4",
       "decimals": 8,
-      "close": 194.15,
-      "closeDate": "2026-10-19"
+      "close": 192.6,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "QQQX",
       "underlying": "QQQ",
       "mint": "Xs8S1uUs1zvS2p7iwtsG3b6fkhpvmwz4GYU3gWAmWHZ",
       "decimals": 8,
-      "close": 718.36,
-      "closeDate": "2026-10-19"
+      "close": 717.63,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "SPYX",
       "underlying": "SPY",
       "mint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
       "decimals": 8,
-      "close": 766.48,
-      "closeDate": "2026-10-19"
+      "close": 769.05,
+      "closeDate": "2026-10-20"
     },
     {
       "xstock": "TSLAX",
       "underlying": "TSLA",
       "mint": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
       "decimals": 8,
-      "close": 368.06,
-      "closeDate": "2026-10-19"
+      "close": 373.71,
+      "closeDate": "2026-10-20"
     }
   ]
 }
